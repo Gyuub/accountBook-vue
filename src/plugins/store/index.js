@@ -9,7 +9,6 @@ export default new Vuex.Store({
     local_domain:"http://127.0.0.1:20280/gn/", 
     dialog: {key:0, isCheck:false, component:"",param:"", callBack:""},
     confirm: {key:0, isCheck:false, callBack:"",msg:""},
-    stack : 0,
     loading : false,
     token : "",
     v_home:{date:new Date()}
@@ -51,26 +50,6 @@ export default new Vuex.Store({
             state.confirm.isCheck = false;    
         }
         
-    },
-    setStack : function(state,stack){
-        if(stack){
-            if(stack < 0){
-                state.stack = 0
-            }else{
-                state.stack = stack
-            }
-        }else{
-            state.stack = 0
-        }
-    },
-    decreaseStack : function(state){
-        state.stack = state.stack-1
-        if(state.stack < 0){
-            state.stack = 0
-        }
-    },
-    increaseStack : function(state){
-        state.stack = state.stack+1
     }
   },
   actions: {

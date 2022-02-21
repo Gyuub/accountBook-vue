@@ -13,31 +13,10 @@
       ></v-progress-circular>
     </div>
 
+    <!-- Body 부분 -->
     <v-content class="custom-wrap" transition="fade-transition">
-
-
       <router-view class = "custom-wrap-content"/>
-
-      <v-tabs v-model="tabs" fixed-tabs height="30" 
-      class= "custom-wrap-tab">
-        <v-tabs-slider></v-tabs-slider>
-
-        <!-- 가계부 내역 메뉴 -->
-        <v-tab to="/home" class="primary--text">
-          <v-icon>mdi-account</v-icon>
-        </v-tab>
-
-        <v-tab to="/" class="primary--text">
-          <v-icon>mdi-lead-pencil</v-icon>
-        </v-tab>
-
-        <!-- 통계 메뉴 -->
-        <v-tab to="/chart" class="primary--text">
-          <v-icon>mdi-chart-bar</v-icon>
-        </v-tab>
-      </v-tabs>
-    
-
+      <VCustomTab/>
     </v-content>
 
     <!-- CustomDialog -->
@@ -52,12 +31,13 @@
 import mixin from '@/plugins/mixin';
 import CustomDialog from '@/components/common/CustomDialog';
 import EventBus from '@/plugins/eventBus';
+import VCustomTab from '@/components/common/v-custom-tab.vue'
 
 export default {
   mixins:[mixin],
   name: 'App',
   components: {
-    CustomDialog
+    CustomDialog, VCustomTab
   },
   created(){
 
@@ -98,12 +78,11 @@ export default {
     top: 40vh;
     left: 50vw;
   }
+  .custom-wrap{
+    margin : 5px 8px;
+  }
   .custom-wrap-content{
-    padding-bottom: 35px;
+    padding-bottom: 38px;
   }
-  .custom-wrap-tab{
-    
-    position: fixed;
-    bottom: 0px;
-  }
+  
 </style>

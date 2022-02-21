@@ -6,8 +6,8 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: () => import('@/components/v-home.vue')
+    name: 'v-detail',
+    component: () => import('@/components/detail/v-detail.vue')
     
   },
   {
@@ -17,8 +17,8 @@ const routes = [
   },
   {
     path: '/home',
-    name: 'home',
-    component: () => import('@/components/home/v-home-header.vue')
+    name: 'v-accout-popup',
+    component: () => import('@/components/account/v-accout-popup.vue')
   },
 
 

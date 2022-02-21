@@ -16,7 +16,7 @@
     <!-- 가계부 선택 버튼 -->
     <div  class ="d-flex justify-start">
         <span class = "subtitle-1 text-color-title">구빙이 가계부</span>
-        <v-icon @click="console.log('ㄴ눌림')" class = " text-color-black mx-2">mdi-format-list-bulleted</v-icon>
+        <v-icon @click="clickAccount()" class = " text-color-black mx-2">mdi-format-list-bulleted</v-icon>
     </div>
   </div>
 </template>
@@ -26,7 +26,7 @@
 
 
 export default {
-  name: 'v-home-header',
+  name: 'v-detail-header',
   components: {
   },
   props: {
@@ -45,6 +45,14 @@ export default {
   created() {
   },
   methods: {
+    clickAccount: function(){
+      var ctx =this;
+      this.$store.commit('checkDialog',{
+        'isOpen':true,'component':'VAccountPopup'
+        ,'param':{}, 'callBack':function(){
+          ctx.selectData();
+        }});
+    },
     clickDate: function(key){
         var currentDate = this.$store.state.v_home.date 
         var modifyDate = new Date(currentDate);

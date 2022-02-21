@@ -1,28 +1,28 @@
 <template >
-  <div class="" >
+  <div >
     
-    <div >
-      <VHomeHeader @selectData="selectData"/>
+    <div  class="py-2" >
+      <VDetailHeader @selectData="selectData"/>
     </div>
 
     <div class="d-flex ">
       <!-- 가계부 월 정산 -->
-      <VAccountInfo :income="boardItem.income" :outcome="boardItem.outcome" :total="boardItem.total" />
+      <VDetailInfo :income="boardItem.income" :outcome="boardItem.outcome" :total="boardItem.total" />
 
     </div>
     <div>
       <RefreshPull :on-refresh="onRefresh">
         <div>
           <div v-for="(item, index) in items" :key="index" >
-            <VHomeContent :item="item" @clickPopup="clickPopup"/>
+            <VDetailContent :item="item" @clickWrite="clickWrite"/>
           </div>
         </div>
       </RefreshPull>
     </div>
 
     <v-fab-transition>
-      <v-btn @click="clickPopup()" color="pink"
-        dark fixed bottom right fab small 
+      <v-btn class = "btn-write" @click="clickWrite()" color="pink"
+        dark fixed top right fab small 
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
@@ -39,17 +39,17 @@
 
 import mixin from '@/plugins/mixin'
 import EventBus from '@/plugins/eventBus';
-import RefreshPull from '@/components/common/RefreshPull';
+import RefreshPull from '@/components/common/RefreshPull.vue';
 
-import VAccountInfo from '@/components/home/account/v-account-info.vue'
-import VHomeHeader from '@/components/home/v-home-header.vue'
-import VHomeContent from '@/components/home/v-home-content.vue'
+import VDetailInfo from '@/components/detail/v-detail-info.vue';
+import VDetailHeader from '@/components/detail/v-detail-header.vue';
+import VDetailContent from '@/components/detail/v-detial-content.vue';
 
 export default {
   mixins:[mixin],
   name: 'Home',
   components: {
-    RefreshPull, VAccountInfo, VHomeHeader, VHomeContent
+    RefreshPull, VDetailInfo, VDetailHeader, VDetailContent
   },
   data: () =>({
     num:0,
@@ -77,14 +77,13 @@ export default {
   
   },
   methods: {
-    clickPopup: function(param){
+    clickWrite: function(param){
       if(!param){
         param = {};
       }
       var ctx =this;
-      this.$store.commit('increaseStack');
       this.$store.commit('checkDialog',{
-        'isOpen':true,'component':'../components/popup/WritePopup.vue'
+        'isOpen':true,'component':'VDetailWritePopup'
         ,'param':param, 'callBack':function(){
           ctx.selectData();
         }});
@@ -158,6 +157,8 @@ export default {
 </script>
 
 <style scoped>
-
+  .btn-write{
+    top:42px;
+  }
 
 </style>
