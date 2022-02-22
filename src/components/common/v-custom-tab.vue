@@ -21,7 +21,7 @@
 <script>
 
 export default {
-  name: 'v-detail-info',
+  name: 'v-custom-tab',
   components: {
   },
   props: {
@@ -30,13 +30,9 @@ export default {
     total: {type: Number,default: 0,},
   },
   data: () =>({
-
+    tabs : ""
   }),
-  computed: {},
-  created() {
-  },
-  methods: {
-  },
+  
 }
 </script>
 
