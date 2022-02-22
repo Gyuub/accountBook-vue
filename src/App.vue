@@ -1,12 +1,16 @@
 <template>
   <v-app class = "jejugothic" style = "font-size: 0.85rem">
     <!-- alert -->
-    <v-snackbar v-model="alert.bar" :timeout="3000" bottom :color="alert.color" class="animated fadeIn slow">
-      {{alert.message}}
+    <v-snackbar 
+      :timeout="3000" bottom 
+      class="animated fadeIn slow"
+      v-model="$store.getters['GET_ALERT'].bar" 
+      :color="$store.getters['GET_ALERT'].color">
+        {{$store.getters['GET_ALERT'].message}}
     </v-snackbar>
 
     <!-- loading -->
-    <div class="loading-wrap" v-show="this.$store.state.loading">
+    <div class="loading-wrap" v-show="this.$store.getters['GET_LOADING']">
       <v-progress-circular class="loading-wrap-progress"
         indeterminate
         color="primary"
@@ -20,7 +24,7 @@
     </v-content>
 
     <!-- CustomDialog -->
-    <CustomDialog/>
+    <VCustomDialog/>
 
   </v-app>
 </template>
@@ -29,38 +33,24 @@
 <script>
 
 import mixin from '@/plugins/mixin';
-import CustomDialog from '@/components/common/CustomDialog';
-import EventBus from '@/plugins/eventBus';
+import VCustomDialog from '@/components/common/v-custom-dialog.vue';
 import VCustomTab from '@/components/common/v-custom-tab.vue'
 
 export default {
   mixins:[mixin],
   name: 'App',
   components: {
-    CustomDialog, VCustomTab
+    VCustomDialog, VCustomTab
   },
   created(){
-
     // URL token 저장
-    this.$store.commit('getUrlParams');
-
-    EventBus.$on("alert",this.showAlert);
-    console.log("to")
+    this.$store.commit("userStore/setToken")
   },
   data: () => ({
-    alert:{
-      bar : false,
-      message : null,
-      color:"",
-    },
+    
   }),
   methods: {
-    showAlert : function(param){
-      this.alert.bar = false;
-      this.alert.message = param.message;
-      this.alert.color = param.color;
-      this.alert.bar = true;
-    },
+    
   },
 };
 </script>

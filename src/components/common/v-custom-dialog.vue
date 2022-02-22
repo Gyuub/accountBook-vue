@@ -2,7 +2,7 @@
   <div >
     <v-row justify="center" >
       <v-dialog 
-        v-model="$store.state.dialog.isCheck" 
+        v-model="$store.getters['GET_DIALOG'].isCheck" 
         fullscreen
         hide-overlay
         transition="dialog-bottom-transition"
@@ -15,26 +15,28 @@
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
         </div>
-        <component
-         v-bind:is="$store.state.dialog.component" 
-         :key="$store.state.dialog.key"
-         style ="background-color:white; height:100vh"/>
+        <keep-alive max="5">
+          <component
+          v-bind:is="$store.getters['GET_DIALOG'].component" 
+          :key="$store.getters['GET_DIALOG'].key"
+          style ="background-color:white; height:100vh"/>
+        </keep-alive>
       </v-dialog>
     </v-row>
     
-    <CustomConfirm />
+    <VCustomConfirm />
   </div>
 </template>
 
 <script>
-  import CustomConfirm from '@/components/common/CustomConfirm.vue'
+  import VCustomConfirm from '@/components/common/v-custom-confirm.vue'
 
   export default {
-    name : "CustomDialog",
+    name : "v-custom-dialog",
     components: {
       'VAccountPopup': ()=> import('@/components/account/v-accout-popup.vue'),
       'VDetailWritePopup': ()=> import('@/components/detail/v-detail-write-popup.vue'),
-      CustomConfirm, 
+      VCustomConfirm, 
     },
     computed:{
     
