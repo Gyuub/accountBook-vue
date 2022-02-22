@@ -1,16 +1,15 @@
 const path = require('path')
 
 module.exports = {
+  publicPath: process.env.VUE_APP_BASE_URL,
+
   "devServer": {
     overlay: false
   },
   "transpileDependencies": [
     "vuetify"
   ],
-  // "chainWebpack": config => {
-  //   config.resolve.alias
-  //     .set('@', path.resolve(__dirname, 'src/'))
-  // }
+
   configureWebpack: {
     resolve: {
       alias: {
@@ -19,4 +18,6 @@ module.exports = {
       extensions: [".js", ".vue", ".json"],
     },
   },
+
+
 }     
