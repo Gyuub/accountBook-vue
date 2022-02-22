@@ -5,26 +5,34 @@ const userStore = {
     state: {
         token:"",
         nickname: "",
-        email: ""
+        email: "",
+        isLogin : false
+
     },
     getters: {
       GET_TOKEN: state => state.token,
       GET_EMAIL: state => state.email,
       GET_NICKNAME: state => state.nickname,
+      GET_ISLOGIN: state => state.isLogin,
     },
     mutations: {
         // accessToken를 설정합니다.
-        setToken : function(state) {
-            var params = {};
-            window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str, key, value) {
-                params[key] = value;
-            });
-            state.token = params.token;
+        setToken : function(state, token) {
+            // var params = {};
+            // window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str, key, value) {
+            //     params[key] = value;
+            // });
+            if(token){
+                state.token = token;
+                state.isLogin = true;
+            }
+            
         },
         setMember(state, payload) {
             state.member.nickname = payload.nickname;
             state.member.email = payload.email;
-        }, 
+        },
+        
         // 초기화시킵니다.
         resetMember(state) {
             state.email = "";
@@ -35,22 +43,31 @@ const userStore = {
 	actions: {
         // 로그인합니다.
         async doLogin({ commit }, memberInfo) {
-            await axios.post("http://localhost:9090/api/authenticate", memberInfo)
-            .then(response => {
+            let result = false;
+            let resultErr = null;
+            try {
+                let response = await axios.post("http://localhost:9090/api/authenticate", memberInfo)
                 if (response.data.token) {
                     console.log("로그인되었습니다.");
+
                     commit('setToken', response.data.token);
-                } else {
-                    console.log("로그인되지 않았습니다.");
+                    result = true;
                 }
-                commit("showAlert",{'message':response.data.message,'color':'success', 'bar':true})
-            })
-            .catch(error => {
-                //commit("showAlert",{'message':error.data.msg,'color':'error'})
-                commit("showAlert",{'message':error.message,'color':'error', 'bar':true})
                 
+                
+
+            }catch(error){
+                console.log(error.message)
+                
+            }
+
+            return new Promise((resolve, reject) => {
+                if (result) {
+                    resolve();
+                } else {
+                    reject(resultErr);
+                }
             });
-            
         },
         // 로그아웃합니다.
         doLogout({commit}) {

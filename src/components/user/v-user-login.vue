@@ -4,19 +4,19 @@
       <v-flex xs12 sm8 md4>
         <v-card class="elevation-12">
           <v-toolbar dark color="primary">
-            <v-toolbar-title>Login form</v-toolbar-title>
+            <v-toolbar-title>로그인 해보즈아</v-toolbar-title>
             <v-spacer></v-spacer>
           </v-toolbar>
           <v-card-text>
             <v-form>
-              <v-text-field prepend-icon="person" v-model="form.id" label="아이디" type="text"></v-text-field>
-              <v-text-field prepend-icon="lock" v-model="form.pwd" label="비밀번호" type="password"></v-text-field>
+              <v-text-field prepend-icon="mdi-account" v-model="form.email" label="아이디" type="text"></v-text-field>
+              <v-text-field prepend-icon="mdi-lock" v-model="form.password" label="비밀번호" type="password"></v-text-field>
             </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" >회원가입</v-btn>
-            <v-btn color="primary" >로그인</v-btn>
+            <v-btn @click="this.doLogin" color="primary" >회원가입</v-btn>
+            <v-btn @click="this.doLogin" color="primary" >로그인</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -37,15 +37,34 @@ export default {
 
   data: () =>({
     form: {
-        id: '',
-        pwd: ''
+        email: 'gyub1@naver.com',
+        password: '1234'
     },
 
   }),
   computed: {},
   created() {
+    
   },
   methods: {
+    test : function(){
+      this.$store.commit("showAlert",{'message':"test",'color':'error', 'bar':true})
+    },
+    doLogin : function(){
+      console.log("dologin")
+      let memberInfo = this.form;
+      this.$store.dispatch("userStore/doLogin", memberInfo)
+      .then((response) => {
+        this.$router.push("/home");
+        this.commit("showAlert",{'message':response.data.message,'color':'success', 'bar':true})
+
+      }).catch((error) => {
+        this.commit("showAlert",{'message':error.message,'color':'error', 'bar':true})
+      });
+
+      
+
+    }
   },
 }
 </script>
