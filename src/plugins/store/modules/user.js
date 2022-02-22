@@ -27,48 +27,34 @@ const userStore = {
         }, 
         // 초기화시킵니다.
         resetMember(state) {
-            state.member = {token:"",nickname: "",email: ""}
+            state.email = "";
+            state.nickname = "";
+            state.token = "";
         },
 	},
 	actions: {
-        AC_TOKEN: ({ commit }) => {
-            commit('MU_TOKEN')
-        },
         // 로그인합니다.
         async doLogin({ commit }, memberInfo) {
-            let result = false;
-            let resultErr = null;
-            try {
-                let res = await axios.post("http://localhost:9000/members/login", memberInfo);
-                if (res.data.success == true) {
+            await axios.post("http://localhost:9090/api/authenticate", memberInfo)
+            .then(response => {
+                if (response.data.token) {
                     console.log("로그인되었습니다.");
-                    commit('setMmemberId', memberInfo.id);
-                    commit('setAccessToken', res.data.accessToken);
-                    result = true;
+                    commit('setToken', response.data.token);
                 } else {
                     console.log("로그인되지 않았습니다.");
-                    let err = new Error("Request failed with status code 401");
-                    err.response = {data:{"success":false, "errormessage":"로그인되지 않았습니다."}};
-                    resultErr = err;
                 }
-            } catch(err) {
-                console.log(err);
-                if (!err.response) {
-                    err.response = {data:{"success":false, "errormessage":err.message}};
-                }
-                resultErr = err;
-            }
-            return new Promise((resolve, reject) => {
-                if (result) {
-                    resolve();
-                } else {
-                    reject(resultErr);
-                }
+                commit("showAlert",{'message':response.data.message,'color':'success', 'bar':true})
+            })
+            .catch(error => {
+                //commit("showAlert",{'message':error.data.msg,'color':'error'})
+                commit("showAlert",{'message':error.message,'color':'error', 'bar':true})
+                
             });
+            
         },
         // 로그아웃합니다.
         doLogout({commit}) {
-            commit('reset');
+            commit('resetMember');
         }
 	}
   };
