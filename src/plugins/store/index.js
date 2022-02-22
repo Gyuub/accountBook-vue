@@ -1,35 +1,43 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import userStore from '@/plugins/store/modules/user'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+  modules: {
+    userStore : userStore
+    },
   state: {
-    domain:"http://106.10.49.23/gn/",  
-    local_domain:"http://127.0.0.1:20280/gn/", 
+    // domain:"http://106.10.49.23/gn/",  
+    // local_domain:"http://127.0.0.1:20280/gn/", 
     dialog: {key:0, isCheck:false, component:"",param:"", callBack:""},
     confirm: {key:0, isCheck:false, callBack:"",msg:""},
     loading : false,
-    token : "",
-    v_home:{date:new Date()}
+    account:{
+        id:1,
+        date:new Date()
+    },
+    alert:{ bar : false,  message : null, color:"",}
   },
   mutations: {
-    getUrlParams: function (){
-        var params = {};
-        window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str, key, value) {
-            params[key] = value;
-        });
-        this.state.token = params.token;
-
-        console.log("Token..")
-    },
+    
     loading:function(state, payload){
         state.loading = payload;
+    },
+    showAlert : function(state, payload){
+        state.alert.message = payload.message;
+        state.alert.color = payload.color;
+        state.alert.bar = true;
+    },
+    //가계부
+    currentAccout: function(state, payload){
+        state.account.id = payload.id;
+        state.account.date = payload.date;
     },
     //Dialog 
     checkDialog: function(state, payload){
         if(payload.isOpen){ 
-            console.log(payload)
             state.dialog.key++;
             state.dialog.component = payload.component;
             state.dialog.param = payload.param;
@@ -53,19 +61,6 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    // onBackPressed(context,payload){
-    //     if(payload.reset){
-    //         context.commit('setStack',payload.reset);
-    //     }else{
-    //         context.commit('setStack');
-    //     }
-    //     EventBus.$off('onBackPressed');
-    //     EventBus.$on('onBackPressed',() =>{
-    //         payload.callback(context.state.stack);
-    //         context.commit('decreaseStack');
-    //     });
-    // }
+    
   },
-  modules: {
-  }
 })
