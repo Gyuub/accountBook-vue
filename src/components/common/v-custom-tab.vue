@@ -7,7 +7,7 @@
             <v-icon>mdi-account</v-icon>
         </v-tab>
 
-        <v-tab to="/" class="primary--text">
+        <v-tab to="/accout" class="primary--text">
             <v-icon>mdi-lead-pencil</v-icon>
         </v-tab>
 

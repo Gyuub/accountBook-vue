@@ -4,7 +4,7 @@
       <v-dialog 
         v-model="$store.getters['GET_DIALOG'].isCheck" 
         fullscreen
-        hide-overlay
+        
         transition="dialog-bottom-transition"
        >
        <div style ="background-color:white;">
@@ -19,7 +19,7 @@
           <component
           v-bind:is="$store.getters['GET_DIALOG'].component" 
           :key="$store.getters['GET_DIALOG'].key"
-          style ="background-color:white; height:100vh"/>
+          style ="background-color:white; height:98vh "/>
         </keep-alive>
       </v-dialog>
     </v-row>
@@ -34,7 +34,7 @@
   export default {
     name : "v-custom-dialog",
     components: {
-      'VAccountPopup': ()=> import('@/components/account/v-accout-popup.vue'),
+      'VAccount': ()=> import('@/components/account/v-accout.vue'),
       'VDetailWritePopup': ()=> import('@/components/detail/v-detail-write-popup.vue'),
       VCustomConfirm, 
     },
@@ -48,7 +48,9 @@
     },
     methods: {
       closeDialog: function(){
-        this.$store.commit('checkDialog',{"isOpen":false})
+        this.$store.getters["GET_DIALOG"].callBack();
+        this.$store.commit('checkDialog',{"isCheck":false})
+        
       }
     }
   }
