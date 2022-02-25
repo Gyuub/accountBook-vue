@@ -2,20 +2,32 @@
   <div >
     
     <div  class="py-2" >
-      <VDetailHeader @selectData="selectData"/>
+      <VDetailHeader @getAllAccountDetails="getAllAccountDetails"/>
     </div>
 
     <div class="d-flex ">
       <!-- 가계부 월 정산 -->
-      <VDetailInfo :income="boardItem.income" :outcome="boardItem.outcome" :total="boardItem.total" />
+      <VDetailInfo 
+      :income="allAccoutDetail.income" 
+      :outcome="allAccoutDetail.outcome" 
+      :total="allAccoutDetail.total" />
 
     </div>
     <div>
       <RefreshPull :on-refresh="onRefresh">
         <div>
-          <div v-for="(item, index) in items" :key="index" >
-            <VDetailContent :item="item" @clickWrite="clickWrite"/>
-          </div>
+          <template v-if="items.length != 0">
+            <div 
+              v-for="(item, index) in items" :key="index" >
+              <VDetailContent :item="item" @clickWrite="clickWrite"/>
+            </div>
+          </template>
+          <template v-else >
+            <div class = "empty">
+              <div >이번달 깜빡하고 안 썻네</div>
+              <!-- <v-icon style="font-size: 8rem;">mdi-pencil-remove-outline </v-icon> -->
+            </div>
+          </template>
         </div>
       </RefreshPull>
     </div>
@@ -55,20 +67,16 @@ export default {
     num:0,
     hidden: false,
     items:[],
+    allAccoutDetail : {income:0, outcome:0, total:0}
   }),
   computed: { 
-      todos(){
-        return this.$store.state.todos;
-      }
    },
   created() {
     var ctx = this;
-    ctx.selectData();
+    ctx.getAllAccountDetails();
 
-    ctx.$store.commit('increaseStack')
-    //console.log(ctx.$store.state.count)
     EventBus.$on("main-refresh", function(){
-			ctx.selectData();
+			ctx.getAllAccountDetails();
     });
     
   },
@@ -77,70 +85,70 @@ export default {
   
   },
   methods: {
-    clickWrite: function(param){
-      if(!param){
-        param = {};
-      }
-      var ctx =this;
-      this.$store.commit('checkDialog',{
-        'isOpen':true,'component':'VDetailWritePopup'
-        ,'param':param, 'callBack':function(){
-          ctx.selectData();
-        }});
+    reset: function(){
+      this.items = [];
+      this.allAccoutDetail = {income:0, outcome:0, total:0};
     },
+    
     //조회
-    selectData: function(){
-      var ctx = this;
-      ctx.boardItem = {income:0, outcome:0, total:0};
-
-      var param = {};
-      param.incom_ymd = this.$store.state.v_home.date.toISOString().substr(0,7);
-
-      var url = this.$store.state.domain+"api/v1/selectList"
-      this.axios.post(url, param)
+    getAllAccountDetails: function(){
+      var currentAccount = this.$store.getters['accountStore/GET_ACCOUNT'];
+      var param = "?date="+currentAccount.date.toISOString().substr(0,10)
+      this.$store.dispatch('accountStore/findAllAccountDetail', param)
           .then(res =>{
             var resultList = [];
             var header ={};
-            console.log(res)
-            if(res.data.result == "Y"){
-                res.data.resultList.forEach((node)=> {
+            var findAllAccount = res;
+            
+            if(findAllAccount.count != 0){
+                findAllAccount.data.forEach((node)=> {
                   //날짜 구분
-                  if(header.ymd != node.incom_ymd){
-                    header.ymd = node.incom_ymd;
+                  if(header.ymd != node.writeDate){
+                    header.ymd = node.writeDate;
                     header.idx = resultList.length;
                     //요일별 총액 추가해야함.
                     //header.money = ctx.calculateMoney(node.spend_cd, header.money, node.incom_amount);
-
                     
-                    resultList.push({ header: node.incom_ymd, price:0}) //구분선
+                    resultList.push({ header: node.writeDate, price:0}) //구분선
                     resultList.push(node)
                   }else{
                     resultList.push(node) 
                   }
 
                   //대쉬보드
-                  if(node.spend_cd =='MA01'){
-                    ctx.boardItem.income+=Number(node.incom_amount);
-                    ctx.boardItem.total+=Number(node.incom_amount);
-                    resultList[header.idx]["price"] += Number(node.incom_amount);
+                  if(node.detailCd =='AC01'){
+                    this.allAccoutDetail.income+=Number(node.amount);
+                    this.allAccoutDetail.total+=Number(node.amount);
+                    resultList[header.idx]["price"] += Number(node.amount);
                   }else{
-                    ctx.boardItem.outcome+=Number(node.incom_amount);
-                    ctx.boardItem.total-=Number(node.incom_amount);
-                    resultList[header.idx]["price"]-=Number(node.incom_amount);
+                    this.allAccoutDetail.outcome+=Number(node.amount);
+                    this.allAccoutDetail.total-=Number(node.amount);
+                    resultList[header.idx]["price"]-=Number(node.amount);
                   }
               });
-              ctx.items = resultList;
+              this.items = resultList;
             }else{
-              EventBus.$emit("alert",{'message':res.data.msg,'color':'error'})
+              this.reset();
+              this.$store.commit("showAlert",{'message':'등록된 내역이 없습니다.','color':'error', 'bar':true})
             }
-
             
           })
           .catch(error => {
-            EventBus.$emit("alert",{'message':error.data.msg,'color':'error'})
+            this.$store.commit("showAlert",{'message':error,'color':'error', 'bar':true})
           });
 
     },
+    clickWrite: function(param){
+      if(!param){
+        param = {};
+      }
+      var ctx =this;
+      this.$store.commit('checkDialog',{'isCheck':true,'component':'VDetailWritePopup','param':param, 'callBack':function(){
+        
+          ctx.getAllAccountDetails();
+        }});
+    },
+    
     onRefresh: function() {
       //var context = this;
       return new Promise(function (resolve) {
@@ -159,6 +167,15 @@ export default {
 <style scoped>
   .btn-write{
     top:42px;
+  }
+  .empty{
+    display:flex;
+    justify-content: center;
+    margin: 4rem 4rem;
+    
+  }
+  .empty>div{
+    font-size: 4rem;
   }
 
 </style>

@@ -14,9 +14,9 @@
     </div>
 
     <!-- 가계부 선택 버튼 -->
-    <div  class ="d-flex justify-start">
-        <span class = "subtitle-1 text-color-title">구빙이 가계부</span>
-        <v-icon @click="clickAccount()" class = " text-color-black mx-2">mdi-format-list-bulleted</v-icon>
+    <div class ="d-flex cursor" @click="clickAccount()" >
+        <span class = "subtitle-1 text-color-title">{{currentAccountName}}</span>
+        <v-icon  class = " text-color-black mx-2">mdi-format-list-bulleted</v-icon>
     </div>
   </div>
 </template>
@@ -37,32 +37,40 @@ export default {
   }),
   computed: {
     currentDate : function(){
-        var currentDate = this.$store.state.v_home.date 
+        var currentDate = this.$store.getters["accountStore/GET_ACCOUNT"].date
         return currentDate.toISOString().substr(0,7)
     },
+    currentAccountName: function(){
+      var name = this.$store.getters["accountStore/GET_ACCOUNT"].name
+        return name
+    }
     
   },
   created() {
   },
   methods: {
     clickAccount: function(){
-      var ctx =this;
-      this.$store.commit('checkDialog',{
-        'isOpen':true,'component':'VAccountPopup'
-        ,'param':{}, 'callBack':function(){
-          ctx.selectData();
+      var ctx = this;
+      this.$store.commit('checkDialog'
+      ,{'isCheck':true,'component':'VAccount','param':{}, 'callBack':function(){
+          ctx.$emit("getAllAccountDetails")
         }});
     },
     clickDate: function(key){
-        var currentDate = this.$store.state.v_home.date 
-        var modifyDate = new Date(currentDate);
-        if(key == "L"){
-            modifyDate.setMonth(modifyDate.getMonth()-1);
-        }else{
-            modifyDate.setMonth(modifyDate.getMonth()+1);
-        }
-        this.$store.state.v_home.date = modifyDate;
-        this.$emit("selectData")
+        this.changeCurrentAccount(key);
+
+        this.$emit("getAllAccountDetails")
+    },
+    changeCurrentAccount: function(key){
+      var currentAccount = this.$store.getters["accountStore/GET_ACCOUNT"]
+      var modifyDate = new Date(currentAccount.date);
+      if(key == "L"){
+          modifyDate.setMonth(modifyDate.getMonth()-1);
+      }else{
+          modifyDate.setMonth(modifyDate.getMonth()+1);
+      }
+      currentAccount.date = modifyDate;
+      this.$store.commit("setCurrentAccount", currentAccount);
     }
   },
 }
@@ -70,7 +78,8 @@ export default {
 
 <style scoped>
 .text-color-title{
-    color:#757575;
+    color:#5697ff;
+    font-weight: 700;
 }
 .text-color-black{
     color : #000000;
@@ -78,7 +87,10 @@ export default {
 .text-color-income{
     color : #0288D1;
 }
-.text-color-total{}
+.cursor{
+  cursor: pointer;
+}
+
 
 
 </style>

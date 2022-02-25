@@ -6,9 +6,7 @@
         class="px-1"
     >
       <v-row class="px-4">
-        <!-- <v-col cols="3">
-          <v-subheader>현금</v-subheader>
-        </v-col> -->
+
         <v-col >
           <v-text-field
             class= "headline"
@@ -16,7 +14,7 @@
             clearable
             hide-details="false"
             label="현금"
-            v-model="param.incom_amount"
+            v-model="param.amount"
             suffix="원">
           </v-text-field> 
         </v-col>
@@ -27,19 +25,16 @@
         <v-col></v-col>
       </v-row>
       
-      
-      
-    
       <v-row>
         <v-col cols="3">
           <v-subheader>구분</v-subheader>
         </v-col>
         <v-col cols="8" >
           <v-btn-toggle 
-            v-model="type"
+            v-model="param.detailCd"
             color="primary">
-              <v-btn value = "MA01" rounded>지출</v-btn>
-              <v-btn value = "MA02" rounded>수입</v-btn>
+              <v-btn value = "AC02" rounded>지출</v-btn>
+              <v-btn value = "AC01" rounded>수입</v-btn>
             </v-btn-toggle>
         </v-col>
       </v-row>
@@ -50,12 +45,14 @@
         </v-col>
         <v-col cols="8" >
           <v-select
-              :items="items"
+              :items="$store.getters['accountStore/GET_CATEGORY'].data"
               label="카테고리를 선택해 주세요"
               outlined
               dense
               hide-details=""
-              
+              v-model="param.categoryId"
+              item-text="name"
+              item-value="id"
             ></v-select>
         </v-col>
       </v-row>
@@ -73,11 +70,11 @@
             offset-y 
             min-width="290px">
             <template v-slot:activator="{ on }">
-                <v-text-field v-model="param.incom_ymd" label="날짜를 선택해 주세요*" hide-details
+                <v-text-field v-model="param.writeDate" label="날짜를 선택해 주세요*" hide-details
                 dense outlined  readonly v-on="on"></v-text-field>
             </template>
 
-              <v-date-picker v-model="param.incom_ymd" no-title scrollable 
+              <v-date-picker v-model="param.writeDate" no-title scrollable 
               @input="menu=false;"
               :month-format=" timestamp => (new Date(timestamp).getMonth() + 1) + '월'"
               :header-date-format="formatHeader">
@@ -93,7 +90,7 @@
         <v-col cols="8" >
           <v-text-field 
             outlined clearable dense 
-            label="내역 제목을 입력해 주세요" v-model="param.incom_title">
+            label="내역 제목을 입력해 주세요" v-model="param.title">
           </v-text-field>
         </v-col>
       </v-row>
@@ -107,14 +104,14 @@
             outlined clearable dense auto-grow filled rows="1" counter="200"
             :rules="[rules.counter]"
             maxlength="200"
-            label="간단한 스토리 입력해 주세요" v-model="param.incom_content">
+            label="간단한 스토리 입력해 주세요" v-model="param.contents">
           </v-textarea>
         </v-col>
       </v-row>
     </v-container>
 
       <div  class ="d-flex justify-center my-1">
-        <template v-if="!param.incom_seq">
+        <template v-if="!param.id">
           <v-btn large color="primary" @click="saveClick('C')" >
             저장
         </v-btn>
@@ -139,44 +136,45 @@
 
 <script>
 import mixin from '@/plugins/mixin';
-import EventBus from '@/plugins/eventBus';
+
 
 export default {
   mixins:[mixin],
   name: 'v-detail-write-popup',
 
   data: () => ({
-    type :"MA01",
+    catecory : [],
     isTypeCheck:true,
     menu:"",
     rules:{
       counter: value => value.length <= 200 || 'Max 200 characters',
     },
     param:{
-      incom_seq:"",
-      incom_amount:0,
-      incom_title:"",
-      incom_content:"",
-      incom_ymd:new Date().toISOString().substr(0, 10),
-      spend_cd:"",
+      id:"",
+      amount:0,
+      title:"",
+      contents:"",
+      writeDate:new Date().toISOString().substr(0, 10),
+      detailCd:"AC02",
+      categoryId: 0
     }
   }),
   created() {
-    if(this.$store.state.dialog.param.incom_ymd){
+    if(this.$store.getters['GET_DIALOG'].param.writeDate){
       this.parsingData()
     }
-
-    this.onClickType()
     
   },
   watch: {
     param: {
 			handler: function() {
+        
 				var ctx = this;
-        if(!ctx.param.incom_amount){
-          ctx.param.incom_amount=0;
+        console.log(ctx.param)
+        if(!ctx.param.amount){
+          ctx.param.amount=0;
         }
-        ctx.param.incom_amount = Number(this.isRegex(ctx.param.incom_amount,'N')).toLocaleString()
+        ctx.param.amount = Number(this.isRegex(ctx.param.amount,'N')).toLocaleString()
 			}
 			, deep: true
 		},
@@ -186,12 +184,18 @@ export default {
     parsingData: function(){
       var ctx = this;
       //ctx.param = this.clone(this.$store.state.dialog.param); 
-      var item = this.$store.state.dialog.param;
+      var item = this.$store.getters['GET_DIALOG'].param;
+      console.log("GYub", item);
       for(var node in this.param){
-        this.param[node] = item[node];
+        if(node == "categoryId"){
+          this.param[node] = item['category'].id;
+        }else{
+          this.param[node] = item[node];
+        }
+        
       }
 
-      if(ctx.param.spend_cd =="MA01"){
+      if(ctx.param.detailCd =="INCOME"){
         ctx.isTypeCheck = false;
       }else{
         ctx.isTypeCheck = true;
@@ -201,53 +205,44 @@ export default {
     //저장
     saveClick: function(type){
       var ctx = this;
-      var url = "";
+      var action = "saveAccountDetail";
       var msg ="";
       //구분
       if(type=="C"){
-        url = ctx.$store.state.domain+"api/v1/write"
+        action = "saveAccountDetail"
         msg = "저장 하시겠습니까?"
       }else if(type=="U"){
-        url = ctx.$store.state.domain+"api/v1/update"
+        action = "updateAccountDetail"
         msg = "수정 하시겠습니까?"
       }else{
-        url = ctx.$store.state.domain+"api/v1/delete"
+        action = "deleteAccountDetail"
         msg = "삭제 하시겠습니까?"
       }
       
-      ctx.param.spend_cd = ctx.type;
-      ctx.param.cre_user_id = 'test';
-      console.log('save')
-
+      
+      let requestParam = ctx.clone(ctx.param);
+      requestParam.amount = ctx.isRegex(requestParam.amount, 'N')
+      requestParam.writeDate = new Date(requestParam.writeDate);
       //confirm
-			ctx.$store.commit('checkConfirm',{"isOpen":true, msg:msg,callBack:function(isCheck){
-				if(isCheck){
-					ctx.axios.post(url, ctx.param)
+			ctx.$store.commit('checkConfirm',{"isCheck":true, msg:msg, callBack:function(confirmResult){
+				if(confirmResult){
+					ctx.$store.dispatch('accountStore/'+action, requestParam)
             .then(res =>{
-              // ctx.param.incom_amount = 0
-              // ctx.param.incom_content=""
-              ctx.$store.state.dialog.callBack();
-              ctx.$store.commit('checkDialog',{"isOpen":false})
-              EventBus.$emit("alert",{'message':res.data.msg,'color':'success'})
+              ctx.$store.getters['GET_DIALOG'].callBack();
+              ctx.$store.commit('checkDialog',{"isCheck":false})
+              ctx.$store.commit("showAlert",{'message':res.message,'color':'success', 'bar':true})
             })
             .catch(error => {
-              EventBus.$emit("alert",{'message':error.data.msg,'color':'error'})
+              ctx.$store.commit("showAlert",{'message':error,'color':'error', 'bar':true})
             });
 				}
-				ctx.$store.commit('checkConfirm',{"isOpen":false})
+				ctx.$store.commit('checkConfirm',{"isCheck":false})
 			}})
     },
-    onClickType: function(){
-      // this.isTypeCheck = !(this.isTypeCheck)
-      // if(this.isTypeCheck){ 
-      //   this.type = {type_cd:'MA01', color:'success', text:'수입'}
-      // }else{
-      //   this.type = {type_cd:'MA02', color:'error', text:'지출'}
-      // }
-    },
+  
     onClick: function(val){
       console.log(val);
-      this.param.incom_amount = Number(this.isRegex(this.param.incom_amount,'N')) + Number(val)
+      this.param.amount = Number(this.isRegex(this.param.amount,'N')) + Number(val)
     },
     formatHeader : function(value){
 			var date = new Date(value)
