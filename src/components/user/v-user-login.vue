@@ -37,7 +37,7 @@ export default {
 
   data: () =>({
     form: {
-        email: 'gyub1@naver.com',
+        email: 'test@kakao.com',
         password: '1234'
     },
 
@@ -47,19 +47,17 @@ export default {
     
   },
   methods: {
-    test : function(){
-      this.$store.commit("showAlert",{'message':"test",'color':'error', 'bar':true})
-    },
+   
     doLogin : function(){
-      console.log("dologin")
+    
       let memberInfo = this.form;
       this.$store.dispatch("userStore/doLogin", memberInfo)
-      .then((response) => {
+      .then(() => {
         this.$router.push("/home");
-        this.commit("showAlert",{'message':response.data.message,'color':'success', 'bar':true})
+        //this.$store.commit("showAlert",{'message':response.message,'color':'success', 'bar':true})
 
-      }).catch((error) => {
-        this.commit("showAlert",{'message':error.message,'color':'error', 'bar':true})
+      }).catch(() => {
+        this.$store.commit("showAlert",{'message':"로그인 정보를 확인해 주세요",'color':'error', 'bar':true})
       });
 
       
