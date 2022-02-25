@@ -1,27 +1,25 @@
 
 "use strict";
 
-import Vue from 'vue';
 import axios from "axios";
 import store from '@/plugins/store/index'
 
-let config = {
-  baseURL: process.env.VUE_APP_BASE_URL,
-  timeout: 60 * 1000, // Timeout
-  //withCredentials: true, // Check cross-site Access-Control
-};
 
-const instance = axios.create(config);
+axios.defaults.baseURL = process.env.VUE_APP_BASE_URL
+axios.defaults.headers.post['Content-Type'] = `application/json;charset=utf-8`;
 
-instance.interceptors.request.use(
+
+
+
+axios.interceptors.request.use(
   //요청 보내기전
   function(config) { 
     config.headers = {
       'Access-Control-Allow-Origin' : '*',
-      "Content-Type" : `application/json;charset=utf-8`,
-      "Authentication": `${store.getters["userStore/GET_TOKEN"]}`, //token은 뭐든 당신의 JWT 토큰을 넣으면 됨.
+      'Authorization' : `Bearer ${store.getters["userStore/GET_TOKEN"]}`
     };
     store.commit('loading',true)
+    console.log(config)
     return config;
   },
   //오류 요청 보내기전
@@ -31,7 +29,7 @@ instance.interceptors.request.use(
 );
 
 
-instance.interceptors.response.use(
+axios.interceptors.response.use(
   function(response) {
     store.commit('loading',false)
     return response;
@@ -42,24 +40,5 @@ instance.interceptors.response.use(
   }
 );
 
-Plugin.install = function(Vue, options) {
-  Vue.axios = instance;
-  window.axios = instance;
-  options
-  Object.defineProperties(Vue.prototype, {
-    axios: {
-      get() {
-        return instance;
-      }
-    },
-    $axios: {
-      get() {
-        return instance;
-      }
-    },
-  });
-};
 
-Vue.use(Plugin)
-
-export default Plugin;
+export default axios;
