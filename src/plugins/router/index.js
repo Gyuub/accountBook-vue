@@ -7,6 +7,11 @@ Vue.use(VueRouter)
 const routes = [
 
   {
+    path: '/home',
+    name: 'v-user',
+    component: () => import('@/components/user/v-user.vue')
+  },
+  {
     path: '/accout',
     name: 'v-detail',
     component: () => import('@/components/detail/v-detail.vue')
@@ -16,11 +21,8 @@ const routes = [
     name: 'chart',
     component: () => import('@/components/stats/v-stats-chart.vue')
   },
-  {
-    path: '/home',
-    name: 'v-accout-popup',
-    component: () => import('@/components/user/v-user-login.vue')
-  },
+  
+  
   {
     path: '/login',
     name: 'v-user-login',
