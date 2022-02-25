@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import createPersistedState from 'vuex-persistedstate';
+
 import userStore from '@/plugins/store/modules/user'
+import accountStore from '@/plugins/store/modules/account'
 import commonStore from '@/plugins/store/modules/common'
 
 Vue.use(Vuex)
@@ -8,30 +11,13 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   modules: {
     userStore : userStore,
-    commonStore: commonStore
+    commonStore: commonStore,
+    accountStore: accountStore
     },
-  state: {
-    // domain:"http://106.10.49.23/gn/",  
-    // local_domain:"http://127.0.0.1:20280/gn/", 
-    // dialog: {key:0, isCheck:false, component:"",param:"", callBack:""},
-    // confirm: {key:0, isCheck:false, callBack:"",msg:""},
-    // loading : false,
-    account:{
-        id:1,
-        date:new Date()
-    },
-    // alert:{ bar : false,  message : null, color:"",}
-  },
-  getters: {
-      GET_ACCOUNT: state =>state.account
-  },
-  mutations: {
-    setAccount: function(state, payload){
-        state.account.date
-        state.account.id = payload
-    }
-  },
-  actions: {
-    
-  },
+  //vuex plugin 명시 
+  plugins: [
+    createPersistedState({
+     paths: ["userStore", "accountStore"] 
+    })
+  ]
 })

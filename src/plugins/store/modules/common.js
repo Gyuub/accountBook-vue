@@ -1,4 +1,4 @@
-//import axios from 'axios'
+//import axios from '@/plugins/axios'
 
 const commonStore = {
     
@@ -34,7 +34,7 @@ const commonStore = {
         },
         //Dialog 
         checkDialog: function(state, payload){
-            if(payload.isOpen){ 
+            if(payload.isCheck){ 
                 state.dialog.key++;
                 state.dialog.component = payload.component;
                 state.dialog.param = payload.param;
@@ -44,15 +44,17 @@ const commonStore = {
                 state.dialog.isCheck = false;
             }
         },
+
         //confirm
         checkConfirm: function(state, payload){
-            if(payload.isOpen){
+            if(payload.isCheck){
                 state.confirm.key++;
                 state.confirm.callBack = payload.callBack;
                 state.confirm.msg = payload.msg;
                 state.confirm.isCheck = true;
             }else{
                 state.confirm.isCheck = false;
+                
             }
             
         }

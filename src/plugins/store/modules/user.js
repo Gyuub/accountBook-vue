@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from '@/plugins/axios'
 
 const userStore = {
     namespaced: true,
@@ -17,16 +17,11 @@ const userStore = {
     },
     mutations: {
         // accessToken를 설정합니다.
-        setToken : function(state, token) {
-            // var params = {};
-            // window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str, key, value) {
-            //     params[key] = value;
-            // });
+        setToken : function(state, token) {        
             if(token){
                 state.token = token;
                 state.isLogin = true;
             }
-            
         },
         setMember(state, payload) {
             state.member.nickname = payload.nickname;
@@ -43,27 +38,23 @@ const userStore = {
 	actions: {
         // 로그인합니다.
         async doLogin({ commit }, memberInfo) {
+            let url = "/api/authenticate";
             let result = false;
             let resultErr = null;
             try {
-                let response = await axios.post("http://localhost:9090/api/authenticate", memberInfo)
+                let response = await axios.post(url, memberInfo)
                 if (response.data.token) {
-                    console.log("로그인되었습니다.");
-
                     commit('setToken', response.data.token);
-                    result = true;
+                    result = response.data
                 }
-                
-                
 
             }catch(error){
                 console.log(error.message)
-                
             }
 
             return new Promise((resolve, reject) => {
                 if (result) {
-                    resolve();
+                    resolve(result);
                 } else {
                     reject(resultErr);
                 }
