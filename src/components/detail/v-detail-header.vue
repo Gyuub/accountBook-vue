@@ -42,7 +42,7 @@ export default {
     },
     currentAccountName: function(){
       var name = this.$store.getters["accountStore/GET_ACCOUNT"].name
-        return name
+        return name? name : "가계부를 등록해주세요"
     }
     
   },

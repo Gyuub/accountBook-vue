@@ -92,50 +92,58 @@ export default {
     
     //조회
     getAllAccountDetails: function(){
-      var currentAccount = this.$store.getters['accountStore/GET_ACCOUNT'];
-      var param = "?date="+currentAccount.date.toISOString().substr(0,10)
-      this.$store.dispatch('accountStore/findAllAccountDetail', param)
-          .then(res =>{
-            var resultList = [];
-            var header ={};
-            var findAllAccount = res;
-            
-            if(findAllAccount.count != 0){
-                findAllAccount.data.forEach((node)=> {
-                  //날짜 구분
-                  if(header.ymd != node.writeDate){
-                    header.ymd = node.writeDate;
-                    header.idx = resultList.length;
-                    //요일별 총액 추가해야함.
-                    //header.money = ctx.calculateMoney(node.spend_cd, header.money, node.incom_amount);
-                    
-                    resultList.push({ header: node.writeDate, price:0}) //구분선
-                    resultList.push(node)
-                  }else{
-                    resultList.push(node) 
-                  }
-
-                  //대쉬보드
-                  if(node.detailCd =='AC01'){
-                    this.allAccoutDetail.income+=Number(node.amount);
-                    this.allAccoutDetail.total+=Number(node.amount);
-                    resultList[header.idx]["price"] += Number(node.amount);
-                  }else{
-                    this.allAccoutDetail.outcome+=Number(node.amount);
-                    this.allAccoutDetail.total-=Number(node.amount);
-                    resultList[header.idx]["price"]-=Number(node.amount);
-                  }
-              });
-              this.items = resultList;
-            }else{
+      if(!this.validationAccount()){
+        this.$store.commit("showAlert",{'message':'오른쪽 상단 가계부를 등록해 주세요','color':'error', 'bar':true})
+      }else{
+        var currentAccount = this.$store.getters['accountStore/GET_ACCOUNT'];
+        var param = "?date="+currentAccount.date.toISOString().substr(0,10)
+        this.$store.dispatch('accountStore/findAllAccountDetail', param)
+            .then(res =>{
               this.reset();
-              this.$store.commit("showAlert",{'message':'등록된 내역이 없습니다.','color':'error', 'bar':true})
-            }
-            
-          })
-          .catch(error => {
-            this.$store.commit("showAlert",{'message':error,'color':'error', 'bar':true})
-          });
+
+              var resultList = [];
+              var header ={};
+              var findAllAccount = res;
+              
+              if(findAllAccount.count != 0){
+                  findAllAccount.data.forEach((node)=> {
+                    //날짜 구분
+                    if(header.ymd != node.writeDate){
+                      header.ymd = node.writeDate;
+                      header.idx = resultList.length;
+                      //요일별 총액 추가해야함.
+                      //header.money = ctx.calculateMoney(node.spend_cd, header.money, node.incom_amount);
+                      
+                      resultList.push({ header: node.writeDate, price:0}) //구분선
+                      resultList.push(node)
+                    }else{
+                      resultList.push(node) 
+                    }
+
+                    //대쉬보드
+                    if(node.detailCd =='AC01'){
+                      this.allAccoutDetail.income+=Number(node.amount);
+                      this.allAccoutDetail.total+=Number(node.amount);
+                      resultList[header.idx]["price"] += Number(node.amount);
+                    }else{
+                      this.allAccoutDetail.outcome+=Number(node.amount);
+                      this.allAccoutDetail.total-=Number(node.amount);
+                      resultList[header.idx]["price"]-=Number(node.amount);
+                    }
+                });
+                this.items = resultList;
+              }else{
+                this.reset();
+                this.$store.commit("showAlert",{'message':'등록된 내역이 없습니다.','color':'error', 'bar':true})
+              }
+              
+            })
+            .catch(error => {
+              this.$store.commit("showAlert",{'message':error,'color':'error', 'bar':true})
+            });
+      }
+
+      
 
     },
     clickWrite: function(param){
@@ -148,7 +156,10 @@ export default {
           ctx.getAllAccountDetails();
         }});
     },
-    
+    validationAccount: function(){
+      var findAll = this.$store.getters['accountStore/GET_All_ACCOUNT']
+      return findAll.count == 0 ? false : true
+    },
     onRefresh: function() {
       //var context = this;
       return new Promise(function (resolve) {

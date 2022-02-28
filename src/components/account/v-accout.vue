@@ -10,25 +10,68 @@
           <v-icon>mdi-playlist-plus </v-icon>
         </v-btn>
       </v-subheader>
-      <v-list-item-group
-        v-model="selectId"
-        mandatory
-        color="primary"
-      >
-        <v-list-item
+
+      <template v-if ="allAccounts.count != 0">
+        <v-list-group
           v-for="(item, i) in allAccounts.data"
-          :key="i"
-          :value="item.account.id"
-          @click="clickChangeItem(item.account)"
+            :key="i"
+            v-bind:value="isCheckCurrentId(item.id)"
+            @click="clickChangeItem(item)"
         >
-          <v-list-item-icon>
-            <v-icon>{{isSelection(item.account.id)}}</v-icon>
-          </v-list-item-icon> 
-          <v-list-item-content>
-            <v-list-item-title v-text="item.account.name"></v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
+          <template v-slot:activator  >
+            <v-list-item-icon>
+                <v-icon>{{currentAccountIdIcon(item.id)}}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content 
+              >
+                <v-list-item-title v-text="item.name"></v-list-item-title>
+            </v-list-item-content >
+          </template>
+
+
+
+          <template
+            v-for="child in item.authoritys"
+          >
+            <v-list-item 
+            prepend-icon="mdi-account"
+            :key="child.title"
+              v-if="child.role != 'OWNER'"
+              class= "account-list-authority"
+            >
+
+              <v-list-item-icon>
+                  <v-icon>mdi-account</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>          
+                <v-list-item-title  v-text="child.member.email"></v-list-item-title>
+                <v-list-item-subtitle v-text="child.member.nickname"></v-list-item-subtitle>
+              </v-list-item-content>
+              <v-btn>공유중</v-btn>
+            </v-list-item>
+          </template>
+
+        </v-list-group>
+      </template>
+      <template v-else >
+        <div class = "empty" @click="openPopup">
+          <div> 새 가계부 등록하기</div>      
+        </div>
+      </template>
+    </v-list>
+
+    <v-list dense>
+      <v-subheader class="account-header">
+        공유 가계부
+        <v-btn
+          icon    
+          large
+          @click="isPopup = true">
+          <v-icon>mdi-playlist-plus </v-icon>
+        </v-btn>
+      </v-subheader>
+
+      
     </v-list>
 
      <v-dialog 
@@ -51,7 +94,7 @@
             </v-row>
             <VAccountPopup @closePopup = "closePopup" @init = "init"/>
           </v-container>
-    </v-dialog> 
+    </v-dialog>
   </div>
 </template>
 
@@ -62,6 +105,17 @@
   .account-header{
     display: flex;
     justify-content: space-between;
+  }
+  .empty>div{
+    text-align: center;
+    font-size: 2.5rem;
+    margin-top: 50px;;
+    cursor: pointer;
+  }
+
+  .account-list{}
+  .account-list-authority{
+    background-color: #eeeeee !important;
   }
 
 </style>
@@ -77,7 +131,6 @@ export default {
 
   data: () => ({
     isPopup : false,
-    selectId: 0,
     allAccounts: [],
   }),
   watch:{
@@ -85,6 +138,8 @@ export default {
   },
   created() {
     this.init(); 
+
+    
   },
   methods:{
     init: function(){
@@ -96,7 +151,7 @@ export default {
         var findAllAccounts = this.$store.getters['accountStore/GET_All_ACCOUNT'];
         
         if( currentAccount == 0){
-          this.$store.commit("accountStore/setCurrentAccount", findAllAccounts.data[0].account)
+          this.$store.commit("accountStore/setCurrentAccount", findAllAccounts.data[0])
         }
         this.selectId = this.$store.getters['accountStore/GET_ACCOUNT'].id
         this.allAccounts = findAllAccounts
@@ -104,15 +159,23 @@ export default {
         console.log(error)
       })
     },
-    isSelection(param){
-      return param == this.selectId ? 'mdi-book-open-variant' : 'mdi-book'
+    isCheckCurrentId(param){
+      var id = this.$store.getters['accountStore/GET_ACCOUNT'].id
+      return id == param;
+    },
+    currentAccountIdIcon(param){
+      var id = this.$store.getters['accountStore/GET_ACCOUNT'].id
+      return param == id ? 'mdi-book-open-variant' : 'mdi-book'
     },
     clickChangeItem: function(param){
       this.$store.commit("accountStore/setCurrentAccount", param)
     },
     closePopup: function(){
       this.isPopup = false
-    }
+    },
+    openPopup: function(){
+      this.isPopup = true
+    },
     
 
   }
