@@ -1,19 +1,40 @@
 <template>
   <v-container fluid fill-height>
-    <v-layout align-center justify-center>
-      <v-flex xs12 sm8 md4>
-        내 정보 보는건데 뭘 넣어야 할까~~~~~~~~~~~~~~~
+    <v-row>
+      <v-col></v-col>
+      <v-col>
+        <v-btn @click="logout">로그아웃</v-btn>
+      </v-col>
+
+      <v-col>
         
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
+    <v-row >
+      <v-col></v-col>
+      <v-col>
+        <img class = "logo" src="@/assets/login.gif">
+        가계부 쓰자으아아아아아
+      </v-col>
+      <v-col></v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        
+        
+      </v-col>
+    </v-row>
+      
   </v-container>
 </template>
 
-<script>
-// @ is an alias to /src
-//import TextList from '../components/list/TextList'
-//import SnackBar from '../components/common/SnackBar'
+<style scoped>
+  .logo{
+    height: 25vh;
+  }
+</style>
 
+<script>
 
 export default {
   name: 'v-user',
@@ -50,12 +71,15 @@ export default {
           return;
         }
         if(findAllAccount.count != 0){
-            this.$store.commit('accountStore/setCurrentAccount', findAllAccount.data[0].account )
+            this.$store.commit('accountStore/setCurrentAccount', findAllAccount.data[0] )
         }
     },
     isCurrentAccount: function(){
       var account = this.$store.getters["accountStore/GET_ACCOUNT"];
       return account.id == 0
+    },
+    logout : function(){
+      this.$store.dispatch('logout');
     }
   },
 }
