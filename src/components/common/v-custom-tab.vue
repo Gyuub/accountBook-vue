@@ -3,7 +3,7 @@
         <v-tabs-slider></v-tabs-slider>
 
         <!-- 가계부 내역 메뉴 -->
-        <v-tab to="/home" class="primary--text">
+        <v-tab to="/" class="primary--text">
             <v-icon>mdi-account</v-icon>
         </v-tab>
 
