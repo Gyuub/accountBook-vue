@@ -33,6 +33,7 @@ const userStore = {
             state.email = "";
             state.nickname = "";
             state.token = "";
+            state.isLogin = false;
         },
 	},
 	actions: {
@@ -60,8 +61,31 @@ const userStore = {
                 }
             });
         },
+        //회원가입 api
+        async signup({ state }, memberInfo) {
+            state
+            let url = "/api/signup";
+            let result = false;
+            let resultErr = null;
+            try {
+                let response = await axios.post(url, memberInfo)
+                if (response.data) {
+                    result = response.data
+                }
+            }catch(error){
+                console.log(error.message)
+            }
+
+            return new Promise((resolve, reject) => {
+                if (result) {
+                    resolve(result);
+                } else {
+                    reject(resultErr);
+                }
+            });
+        },
         // 로그아웃합니다.
-        doLogout({commit}) {
+        reset({commit}) {
             commit('resetMember');
         }
 	}

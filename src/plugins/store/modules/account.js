@@ -35,12 +35,21 @@ const accountStore = {
         setCategory: function(state, payload){
             state.category.count = payload.count;
             state.category.data = payload.data;
+        },
+        resetAccount: function(state){
+            state.account = {id:0,name:"",date:new Date(),}
+            state.accounts = {count:0,data:[]},
+            state.category = {count:0,data:[]}
+            
         }
 	},
 	actions: {
+        reset({commit}){
+            commit('resetAccount');
+        },
         //조회 : 전체 권한 가계부
         async findAllAccount({ commit}) {
-            let url = "/api/v1/authority"
+            let url = basePath
             let result = false;
             let resultErr = null;
             try {

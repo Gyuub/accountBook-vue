@@ -7,7 +7,7 @@ Vue.use(VueRouter)
 const routes = [
 
   {
-    path: '/home',
+    path: '/',
     name: 'v-user',
     component: () => import('@/components/user/v-user.vue')
   },
@@ -44,6 +44,7 @@ const routes = [
 
 
 const router = new VueRouter({
+  mode: "history",
   base: process.env.BASE_URL,
   routes
 })
@@ -58,6 +59,8 @@ router.beforeEach((to, from, next) => {
     if (to.path != '/login'){
       return next('/login')
     }
+  }else{
+    return next()
   }
   return next();
 });
