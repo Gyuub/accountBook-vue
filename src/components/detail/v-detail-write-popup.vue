@@ -233,7 +233,8 @@ export default {
               ctx.$store.commit("showAlert",{'message':res.message,'color':'success', 'bar':true})
             })
             .catch(error => {
-              ctx.$store.commit("showAlert",{'message':error,'color':'error', 'bar':true})
+              var response = error.response.data
+              ctx.$store.commit("showAlert",{'message':response.message,'color':'error', 'bar':true})
             });
 				}
 				ctx.$store.commit('checkConfirm',{"isCheck":false})

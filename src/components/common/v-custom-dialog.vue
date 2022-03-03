@@ -19,7 +19,7 @@
           <component
           v-bind:is="$store.getters['GET_DIALOG'].component" 
           :key="$store.getters['GET_DIALOG'].key"
-          style ="background-color:white; height:98vh "/>
+          style ="background-color:white; height:100vh "/>
         </keep-alive>
       </v-dialog>
     </v-row>

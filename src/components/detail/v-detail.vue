@@ -92,10 +92,11 @@ export default {
     
     //조회
     getAllAccountDetails: function(){
+      var ctx = this;
       if(!this.validationAccount()){
         this.$store.commit("showAlert",{'message':'오른쪽 상단 가계부를 등록해 주세요','color':'error', 'bar':true})
       }else{
-        var currentAccount = this.$store.getters['accountStore/GET_ACCOUNT'];
+        var currentAccount = this.$store.getters['accountStore/GET_CURRENT_ACCOUNT'];
         var param = "?date="+currentAccount.date.toISOString().substr(0,10)
         this.$store.dispatch('accountStore/findAllAccountDetail', param)
             .then(res =>{
@@ -134,12 +135,13 @@ export default {
                 this.items = resultList;
               }else{
                 this.reset();
-                this.$store.commit("showAlert",{'message':'등록된 내역이 없습니다.','color':'error', 'bar':true})
+                //this.$store.commit("showAlert",{'message':'등록된 내역이 없습니다.','color':'error', 'bar':true})
               }
               
             })
             .catch(error => {
-              this.$store.commit("showAlert",{'message':error,'color':'error', 'bar':true})
+              var response = error.response.data
+              ctx.$store.commit("showAlert",{'message':response.message,'color':'error', 'bar':true})
             });
       }
 

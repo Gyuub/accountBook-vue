@@ -7,7 +7,7 @@
             outlined clearable 
             counter="20"
             :rules="[rules.counter]"
-            label="가계부 이름을 입력해 주세요" v-model="param.name">
+            label="상대방 이메일을 입력해 주세요" v-model="email">
           </v-text-field>
         </v-col>
       </v-row>
@@ -37,14 +37,14 @@ import mixin from '@/plugins/mixin';
 export default {
   mixins:[mixin],
   name: 'v-account-popup',
-
+  props: {
+      param : {type: Object,}
+  },
   data: () => ({
     rules:{
       counter: value => value.length <= 20 || 'Max 20 characters',
     },
-    param: {
-      name: ""
-    }
+    email: "",
   }),
   created() {
     
@@ -59,19 +59,22 @@ export default {
     //저장
     saveClick: function(){
       var ctx = this;
-      var action = "saveAccount";
+      var action = "saveAccountSharing";
       var msg ="저장 하시겠습니까?";
-      console.log()
       
+      var requestParam = {};
+      requestParam.accountId = this.param.id;
+      requestParam.toMemberEmail = this.email;
+
       //confirm
 			ctx.$store.commit('checkConfirm',{"isCheck":true, msg:msg, callBack:function(confirmResult){
 				if(confirmResult){
-					ctx.$store.dispatch('accountStore/'+action, ctx.param)
+					ctx.$store.dispatch('accountStore/'+action, requestParam)
             .then(res =>{
               ctx.$emit("closePopup")
-              ctx.$emit("init")
               ctx.$store.commit('checkConfirm',{"isCheck":false})
               ctx.$store.commit("showAlert",{'message':res.message,'color':'success', 'bar':true})
+              ctx.$emit("parentInit")
             })
             .catch(error => {
               var response = error.response.data

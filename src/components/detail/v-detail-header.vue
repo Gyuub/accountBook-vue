@@ -37,11 +37,11 @@ export default {
   }),
   computed: {
     currentDate : function(){
-        var currentDate = this.$store.getters["accountStore/GET_ACCOUNT"].date
+        var currentDate = this.$store.getters["accountStore/GET_CURRENT_ACCOUNT"].date
         return currentDate.toISOString().substr(0,7)
     },
     currentAccountName: function(){
-      var name = this.$store.getters["accountStore/GET_ACCOUNT"].name
+      var name = this.$store.getters["accountStore/GET_CURRENT_ACCOUNT"].name
         return name? name : "가계부를 등록해주세요"
     }
     
@@ -62,7 +62,7 @@ export default {
         this.$emit("getAllAccountDetails")
     },
     changeCurrentAccount: function(key){
-      var currentAccount = this.$store.getters["accountStore/GET_ACCOUNT"]
+      var currentAccount = this.$store.getters["accountStore/GET_CURRENT_ACCOUNT"]
       var modifyDate = new Date(currentAccount.date);
       if(key == "L"){
           modifyDate.setMonth(modifyDate.getMonth()-1);
