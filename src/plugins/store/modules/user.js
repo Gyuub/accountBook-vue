@@ -64,7 +64,7 @@ const userStore = {
         //회원가입 api
         async signup({ state }, memberInfo) {
             state
-            let url = "/api/signup";
+            let url = "/api/v1/signup";
             let result = false;
             let resultErr = null;
             try {
