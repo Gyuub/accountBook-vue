@@ -83,15 +83,17 @@ export default {
   },
   methods: {
     doLogin : function(){
-    
+      var ctx = this
       let memberInfo = this.form;
       this.$store.dispatch("userStore/doLogin", memberInfo)
       .then(() => {
         this.$router.push("/");
         //this.$store.commit("showAlert",{'message':response.message,'color':'success', 'bar':true})
 
-      }).catch(() => {
-        this.$store.commit("showAlert",{'message':"로그인 정보를 확인해 주세요",'color':'error', 'bar':true})
+      }).catch(error => {
+        
+        var response = error.response.data
+        ctx.$store.commit("showAlert",{'message':response.message,'color':'error', 'bar':true})
       });
 
     },
