@@ -106,7 +106,7 @@ export default {
         var msg = "저장 하시겠습니까?";
         ctx.$store.commit('checkConfirm',{"isCheck":true, msg:msg, callBack:function(confirmResult){
           if(confirmResult){
-            console.log("test")
+          
             ctx.$store.dispatch('userStore/signup', ctx.param)
               .then(res =>{
                 ctx.$emit("closePopup")
@@ -120,14 +120,11 @@ export default {
           }
           ctx.$store.commit('checkConfirm',{"isCheck":false})
         }})
-      }else{
-        console.log("false")
       }
     
     },
   
     onClick: function(val){
-      console.log(val);
       this.param.amount = Number(this.isRegex(this.param.amount,'N')) + Number(val)
     },
     
