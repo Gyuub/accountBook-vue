@@ -16,18 +16,28 @@
     <div>
       <RefreshPull :on-refresh="onRefresh">
         <div>
-          <template v-if="items.length != 0">
-            <div 
-              v-for="(item, index) in items" :key="index" >
-              <VDetailContent :item="item" @clickWrite="clickWrite"/>
-            </div>
-          </template>
-          <template v-else >
-            <div class = "empty">
-              <div >이번달 깜빡하고 안 썻네</div>
-              <!-- <v-icon style="font-size: 8rem;">mdi-pencil-remove-outline </v-icon> -->
-            </div>
-          </template>
+          
+            <template v-if="items.length != 0">
+                  <div 
+                    v-for="(item, index) in items" :key="index" >
+                    <VDetailContent :item="item" @clickWrite="clickWrite"/>
+                  </div>
+            </template>
+            <template v-else >
+              <v-lazy
+                tag="div"
+                :options="{
+                  threshold: .5
+                }"
+                transition="fade-transition"
+              >
+                <div class = "empty">
+                  <div >이번달 깜빡하고 안 썻네</div>
+                  <!-- <v-icon style="font-size: 8rem;">mdi-pencil-remove-outline </v-icon> -->
+                </div>
+              </v-lazy>    
+            </template>
+          
         </div>
       </RefreshPull>
     </div>
@@ -189,6 +199,20 @@ export default {
   }
   .empty>div{
     font-size: 4rem;
+  }
+
+  .list-item {
+  display: inline-block;
+  margin-right: 10px;
+  }
+  .list-enter-active,
+  .list-leave-active {
+    transition: all 1s ease;
+  }
+  .list-enter-from,
+  .list-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
   }
 
 </style>

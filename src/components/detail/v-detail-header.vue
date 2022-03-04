@@ -70,7 +70,7 @@ export default {
           modifyDate.setMonth(modifyDate.getMonth()+1);
       }
       currentAccount.date = modifyDate;
-      this.$store.commit("setCurrentAccount", currentAccount);
+      this.$store.commit("accountStore/setCurrentAccount", currentAccount);
     }
   },
 }

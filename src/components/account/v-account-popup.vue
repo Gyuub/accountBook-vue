@@ -61,7 +61,7 @@ export default {
       var ctx = this;
       var action = "saveAccount";
       var msg ="저장 하시겠습니까?";
-      console.log()
+      
       
       //confirm
 			ctx.$store.commit('checkConfirm',{"isCheck":true, msg:msg, callBack:function(confirmResult){
@@ -83,7 +83,7 @@ export default {
     },
   
     onClick: function(val){
-      console.log(val);
+      
       this.param.amount = Number(this.isRegex(this.param.amount,'N')) + Number(val)
     },
     formatHeader : function(value){

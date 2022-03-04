@@ -168,9 +168,8 @@ export default {
   watch: {
     param: {
 			handler: function() {
-        
 				var ctx = this;
-        console.log(ctx.param)
+        
         if(!ctx.param.amount){
           ctx.param.amount=0;
         }
@@ -185,7 +184,7 @@ export default {
       var ctx = this;
       //ctx.param = this.clone(this.$store.state.dialog.param); 
       var item = this.$store.getters['GET_DIALOG'].param;
-      console.log("GYub", item);
+      
       for(var node in this.param){
         if(node == "categoryId"){
           this.param[node] = item['category'].id;
@@ -242,7 +241,6 @@ export default {
     },
   
     onClick: function(val){
-      console.log(val);
       this.param.amount = Number(this.isRegex(this.param.amount,'N')) + Number(val)
     },
     formatHeader : function(value){

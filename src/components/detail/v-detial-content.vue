@@ -31,7 +31,9 @@
                 </div>
 
                 <!-- price -->
-                <span class="d-flex align-center text--primary subtitle-2 flex-grow-0 px-2">
+                <span 
+                    class="d-flex align-center  subtitle-2 flex-grow-0 px-2"
+                    :class="{'text-color-income': item.detailCd === 'AC01' }">
                     {{Number(item.amount).toLocaleString()}}
                 </span>
             </div>
@@ -117,5 +119,8 @@ export default {
  .account-content{
      margin-top: 5px;
  }
+ .text-color-income{
+    color : #0288D1 !important;
+}
 </style>
 
