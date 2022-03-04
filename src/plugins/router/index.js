@@ -18,8 +18,8 @@ const routes = [
   },
   {
     path: '/chart',
-    name: 'chart',
-    component: () => import('@/components/stats/v-stats-chart.vue')
+    name: 'piechart',
+    component: () => import('@/components/stats/v-stats-pie-chart.vue')
   },
   
   
