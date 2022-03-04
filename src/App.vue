@@ -19,17 +19,12 @@
 
     <!-- Body 부분 -->
     <v-content class="custom-wrap" transition="fade-transition">
-      <!-- <router-view v-slot="{ Component }" class = "custom-wrap-content">
-        <transition name="fade" mode="out-in">
-          <component :is="Component"/>
-        </transition>
-      </router-view> -->
       <v-slide-x-transition mode="out-in">
         <router-view class = "custom-wrap-content" />
       </v-slide-x-transition>
-      <VCustomTab v-show="this.$store.getters['userStore/GET_TOKEN'] != '' "/>
+      
     </v-content>
-
+    <VCustomTab v-show="this.$store.getters['userStore/GET_TOKEN'] != '' "/>
 
     <VCustomDialog/>
 
