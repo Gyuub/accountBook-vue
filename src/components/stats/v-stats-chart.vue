@@ -54,7 +54,6 @@
       Reactive
     },
     data () {
-
       return {
         menu : false,
         date : new Date().toISOString().substr(0,7),
@@ -75,7 +74,7 @@
         var param = {
           "search_date" : ctx.date
         };
-        var url = this.$store.state.domain+"api/v1/chart/selectChartList"
+        var url = "/api/v1/chart/selectChartList"
         this.axios.post(url, param)
             .then(res =>{
               if(res.data.result == "Y"){
@@ -94,7 +93,6 @@
         var incom_amount = []
         var profit_a_loss = []
 
-        console.log(list)
         list.forEach(function(node){
             labels.push(node.mea_date)
             expenses_amount.push(node.expenses_amount)
@@ -119,5 +117,5 @@
       },
     }
   }
-</script>~
+</script>
 
