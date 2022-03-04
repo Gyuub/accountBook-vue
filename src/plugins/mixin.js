@@ -5,7 +5,7 @@ let mixin = {
         }
     },
     created() {
-        console.log('mixin')
+        
     },
     methods:{
         clone: function(obj) {

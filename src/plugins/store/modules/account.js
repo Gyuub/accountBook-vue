@@ -12,6 +12,7 @@ const accountStore = {
             date:new Date(),
         },
         category:{count:0,data:[]},
+        stats:{}
     },
     getters: {
         GET_CURRENT_ACCOUNT: state =>{
@@ -25,6 +26,7 @@ const accountStore = {
             }
         },
         GET_CATEGORY: state =>state.category,
+        GET_STATS: state =>state.stats,
     },
     mutations: {
         //==전체 가계부 설정==//
@@ -44,12 +46,15 @@ const accountStore = {
             state.category.count = payload.count;
             state.category.data = payload.data;
         },
+        setStats: function(state, payload){
+            state.stats = payload;
+        },
         resetAccount: function(state){
             state.account = {id:0,name:"",date:new Date(),}
             state.accounts = {count:0,data:[]},
             state.sharingAccounts = {count:0,data:[]},
             state.category = {count:0,data:[]}
-            
+            state.stats = {}
         }
 	},
 	actions: {
@@ -128,6 +133,28 @@ const accountStore = {
             try {
                 let response = await axios.get(url)
                 result = response.data;
+            }catch(error){
+                resultErr = error;                
+            }
+
+            return new Promise((resolve, reject) => {
+                if (result) {
+                    resolve(result);
+                } else {
+                    reject(resultErr);
+                }
+            });
+        },
+        //조회 : 가계부 통계 조회
+        async findAllAccountDetailStats({ commit, state }, param) {
+            var accountId = state.account.id;
+            let url = basePath +"stats/" + accountId + param
+            let result = false;
+            let resultErr = null;
+            try {
+                let response = await axios.get(url)
+                result = response.data;
+                commit("setStats",response.data)
             }catch(error){
                 resultErr = error;                
             }
