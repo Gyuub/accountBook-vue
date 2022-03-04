@@ -40,8 +40,9 @@ export default {
 .custom-wrap-tab{
     position: fixed;
     bottom: 0px;
+    border-top: 1px solid #dedede;
   }
-
+    
 
 </style>
 
