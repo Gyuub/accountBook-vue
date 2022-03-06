@@ -11,7 +11,7 @@ const accountStore = {
             name:"",
             date:new Date(),
         },
-        category:{count:0,data:[]},
+        category:{count:0, income:[], outcome: [], data:[]},
         stats:{}
     },
     getters: {
@@ -45,6 +45,8 @@ const accountStore = {
         setCategory: function(state, payload){
             state.category.count = payload.count;
             state.category.data = payload.data;
+            state.category.income = payload.income;
+            state.category.outcome = payload.outcome;
         },
         setStats: function(state, payload){
             state.stats = payload;
@@ -107,9 +109,20 @@ const accountStore = {
             let resultErr = null;
             try {
                 let response = await axios.get(url)
-                if (response.data) {
-                    commit("setCategory", response.data)
-                    
+                let result = response.data;
+                
+                if (result) {
+                    var income = [];
+                    var outcome = [];
+                    for(var idx = 0 ; idx < result.count; idx++){
+                        result.data[idx].groupId == "AC01" ? 
+                            income.push(result.data[idx]) : outcome.push(result.data[idx])
+                       
+                    }
+                    result["income"] = income;
+                    result["outcome"] = outcome;
+
+                    commit("setCategory", result)
                     result = true;
                 }
             }catch(error){

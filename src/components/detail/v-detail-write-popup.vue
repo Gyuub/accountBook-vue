@@ -5,12 +5,13 @@
     <v-container
         class="px-1"
     >
+    <v-form ref="form" lazy-validation>
       <v-row class="px-4">
 
         <v-col >
           <v-text-field
+            :rules="rules.amountRules"
             class= "headline"
-            
             clearable
             hide-details="false"
             label="현금"
@@ -31,6 +32,7 @@
         </v-col>
         <v-col cols="8" >
           <v-btn-toggle 
+          :rules="rules.detailCdRules"
             v-model="param.detailCd"
             color="primary">
               <v-btn value = "AC02" rounded>지출</v-btn>
@@ -44,8 +46,10 @@
           <v-subheader>분류</v-subheader>
         </v-col>
         <v-col cols="8" >
-          <v-select
-              :items="$store.getters['accountStore/GET_CATEGORY'].data"
+          <template v-if="param.detailCd == 'AC01' ">
+            <v-select
+              :items="$store.getters['accountStore/GET_CATEGORY'].income"
+              :rules="rules.categoryIdRules"
               label="카테고리를 선택해 주세요"
               outlined
               dense
@@ -54,6 +58,21 @@
               item-text="name"
               item-value="id"
             ></v-select>
+          </template>
+          <template v-else>
+            <v-select
+              :items="$store.getters['accountStore/GET_CATEGORY'].outcome"
+              :rules="rules.categoryIdRules"
+              label="카테고리를 선택해 주세요"
+              outlined
+              dense
+              hide-details=""
+              v-model="param.categoryId"
+              item-text="name"
+              item-value="id"
+            ></v-select>
+          </template>
+          
         </v-col>
       </v-row>
 
@@ -90,6 +109,7 @@
         <v-col cols="8" >
           <v-text-field 
             outlined clearable dense 
+            :rules="rules.titleRules"
             label="내역 제목을 입력해 주세요" v-model="param.title">
           </v-text-field>
         </v-col>
@@ -102,12 +122,13 @@
         <v-col cols="8" >
           <v-textarea
             outlined clearable dense auto-grow filled rows="1" counter="200"
-            :rules="[rules.counter]"
+            :rules="rules.contentsRules"
             maxlength="200"
             label="간단한 스토리 입력해 주세요" v-model="param.contents">
           </v-textarea>
         </v-col>
       </v-row>
+    </v-form>
     </v-container>
 
       <div  class ="d-flex justify-center my-1">
@@ -143,12 +164,29 @@ export default {
   name: 'v-detail-write-popup',
 
   data: () => ({
+    rules:{
+      amountRules: [
+        v => !!v || '현금은 필수입니다 !',
+        v => v.length >= 1 || '현금을 1원 이상입니다',
+      ],
+      detailCdRules:[
+        v => !!v || '구분은 필수입니다 !',
+      ],
+      categoryIdRules: [
+        v => !!v || '분류는 필수입니다 !',        
+      ],
+      titleRules: [
+        v => !!v || '제목은 필수입니다 !',
+        v => v.length <= 20 || '제목은 20자를 넘길 수 없습니다',
+      ],
+      contentsRules: [
+        v => v.length <= 200 || '내용은 200자를 넘길 수 없습니다',
+      ]
+    },
+
     catecory : [],
     isTypeCheck:true,
     menu:"",
-    rules:{
-      counter: value => value.length <= 200 || 'Max 200 characters',
-    },
     param:{
       id:"",
       amount:0,
@@ -166,18 +204,31 @@ export default {
     
   },
   watch: {
-    param: {
+
+    'param.amount': {
 			handler: function() {
 				var ctx = this;
         
         if(!ctx.param.amount){
           ctx.param.amount=0;
         }
+        
         ctx.param.amount = Number(this.isRegex(ctx.param.amount,'N')).toLocaleString()
 			}
 			, deep: true
 		},
     
+    'param.detailCd':{
+			handler: function() {
+				if(this.param.detailCd =='AC01'){
+          this.param.categoryId = this.$store.getters['accountStore/GET_CATEGORY'].income[0].id
+        }else{
+          this.param.categoryId = this.$store.getters['accountStore/GET_CATEGORY'].outcome[0].id
+        }
+        
+			}
+			, deep: true
+		},
   },
   methods:{
     parsingData: function(){
@@ -191,7 +242,6 @@ export default {
         }else{
           this.param[node] = item[node];
         }
-        
       }
 
       if(ctx.param.detailCd =="INCOME"){
@@ -218,26 +268,29 @@ export default {
         msg = "삭제 하시겠습니까?"
       }
       
+      const validate = this.$refs.form.validate();
+      if(validate){
+        let requestParam = ctx.clone(ctx.param);
+        requestParam.amount = ctx.isRegex(requestParam.amount, 'N')
+        requestParam.writeDate = new Date(requestParam.writeDate);
+        //confirm
+        ctx.$store.commit('checkConfirm',{"isCheck":true, msg:msg, callBack:function(confirmResult){
+          if(confirmResult){
+            ctx.$store.dispatch('accountStore/'+action, requestParam)
+              .then(res =>{
+                ctx.$store.getters['GET_DIALOG'].callBack();
+                ctx.$store.commit('checkDialog',{"isCheck":false})
+                ctx.$store.commit("showAlert",{'message':res.message,'color':'success', 'bar':true})
+              })
+              .catch(error => {
+                var response = error.response.data
+                ctx.$store.commit("showAlert",{'message':response.message,'color':'error', 'bar':true})
+              });
+          }
+          ctx.$store.commit('checkConfirm',{"isCheck":false})
+        }})
+      }
       
-      let requestParam = ctx.clone(ctx.param);
-      requestParam.amount = ctx.isRegex(requestParam.amount, 'N')
-      requestParam.writeDate = new Date(requestParam.writeDate);
-      //confirm
-			ctx.$store.commit('checkConfirm',{"isCheck":true, msg:msg, callBack:function(confirmResult){
-				if(confirmResult){
-					ctx.$store.dispatch('accountStore/'+action, requestParam)
-            .then(res =>{
-              ctx.$store.getters['GET_DIALOG'].callBack();
-              ctx.$store.commit('checkDialog',{"isCheck":false})
-              ctx.$store.commit("showAlert",{'message':res.message,'color':'success', 'bar':true})
-            })
-            .catch(error => {
-              var response = error.response.data
-              ctx.$store.commit("showAlert",{'message':response.message,'color':'error', 'bar':true})
-            });
-				}
-				ctx.$store.commit('checkConfirm',{"isCheck":false})
-			}})
     },
   
     onClick: function(val){
