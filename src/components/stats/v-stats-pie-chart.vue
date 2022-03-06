@@ -18,7 +18,7 @@
     },
     
     created() {
-      this.divideData();
+      //this.divideData();
     },
     data: ()=> ({
       update: 1,
@@ -36,31 +36,7 @@
             padding: 15
         },
         plugins: {
-          doughnutlabel: {
-            labels: [
-              {
-                  text: "최고 지출 카테고리",
-                  font: {
-                  size: '15',
-                  weight: 'bold',
-                  }
-              },
-              {
-                  text: '식비',
-                  font: {
-                  size: '20',
-                  weight: 'bold',
-                  }
-              },
-              {
-                  text: '333,000원',
-                  font: {
-                  size: '16',
-                  weight: 'bold',
-                  }
-              },
-            ],
-          }
+            
         }
       },
 
@@ -85,7 +61,6 @@
     },
     methods: {
       divideData : function(){
-        
         var list = this.$store.getters["accountStore/GET_STATS"];
         var categoryName = [];
         var amount = [];
@@ -94,16 +69,32 @@
           categoryName.push(list.data[i].categoryName)
           amount.push(list.data[i].amount)
         }
-        
-        this.chartData.labels = categoryName
-        this.chartData.datasets[0].label = categoryName
-        this.chartData.datasets[0].data = amount
+
+        var doughnutlabel = {
+            labels: [
+              {
+                text: "최고 지출 카테고리", font: {size: '15',weight: 'bold',}
+              },
+              {
+                text: `${categoryName[0] ? categoryName[0]:"" }`, font: {size: '20',weight: 'bold',}
+              },
+              {
+                text: `${amount[0] ? Number(amount[0]).toLocaleString() : 0} 원`, font: {size: '16',weight: 'bold',}
+              },
+            ],
+        }
+
+        this.chartData.labels = categoryName;
+        this.chartData.datasets[0].label = categoryName;
+        this.chartData.datasets[0].data = amount;
+        this.chartOptions.plugins['doughnutlabel'] = doughnutlabel;
 
         this.chart = {
           options : this.chartOptions,
           chartData : this.chartData
         }
         this.update++
+
       }
     }
   }
