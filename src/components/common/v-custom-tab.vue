@@ -25,13 +25,14 @@ export default {
   components: {
   },
   props: {
-    income: {type: Number,default: 0,},
-    outcome: {type: Number,default: 0,},
-    total: {type: Number,default: 0,},
+   
   },
   data: () =>({
     tabs : ""
   }),
+  methods: {
+    
+  },
   
 }
 </script>

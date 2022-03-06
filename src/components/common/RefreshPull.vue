@@ -209,7 +209,7 @@ export default {
                 }, supportsPassive ? {passive: true} : false);
 
                 // bind touchend event
-                el.addEventListener('touchend', e => {
+                el.addEventListener('touchend', () => {
                     this.canPull = false;
                     el.style.overflowY = 'auto';
                     pullDownHeader.style.transition = ANIMATION;
@@ -225,7 +225,7 @@ export default {
                             var res = this.onRefresh();
                             // if onRefresh return promise
                             if (res && res.then && typeof res.then === 'function') {
-                                res.then(result => {
+                                res.then(() => {
                                     resetPullDown(this.pullDown, true);
                                 }, error => {
                                     // show error and hide the pull down after 1 second
