@@ -60,6 +60,12 @@ const commonStore = {
         }
 	},
 	actions: {
+        setTimeOutLoading: function({state}){
+            state.loading = true
+            setTimeout(() => {
+                state.loading = false;
+            }, 1500);
+        }
         
 	}
   };

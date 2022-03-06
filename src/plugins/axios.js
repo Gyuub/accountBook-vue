@@ -18,7 +18,8 @@ axios.interceptors.request.use(
       'Access-Control-Allow-Origin' : '*',
       'Authorization' : `Bearer ${store.getters["userStore/GET_TOKEN"]}`
     };
-    store.commit('loading',true)
+    store.dispatch("setTimeOutLoading")
+
     console.log(config)
     return config;
   },
@@ -31,7 +32,8 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   function(response) {
-    store.commit('loading',false)
+    
+    //store.commit('loading',false)
     return response;
   },
   function(error) {
