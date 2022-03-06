@@ -18,7 +18,13 @@
     </div>
 
     <!-- Body 부분 -->
-    <v-content class="custom-wrap" transition="fade-transition">
+    <v-content 
+    v-touch="{
+        left: () => swipe(1),
+        right: () => swipe(-1),
+      }"
+    class="custom-wrap" 
+    transition="fade-transition">
       <v-slide-x-transition mode="out-in">
         <router-view class = "custom-wrap-content" />
       </v-slide-x-transition>
@@ -45,14 +51,41 @@ export default {
     VCustomDialog, VCustomTab
   },
   created(){
-    // URL token 저장
-    //this.$store.commit("userStore/setToken")
+    console.log("=====Init=====")
+    this.currentTabIndex()
   },
   data: () => ({
+    num: 0
     
   }),
   methods: {
-    
+    swipe (direction) {
+      const MAX_INDEX = 2;
+      const MIN_INDEX = 0;
+      var routerList = this.$router.options.routes;
+      
+      var tabIndex = this.num + direction;
+      console.log("tabIndex", tabIndex)
+      console.log("this.num", this.num)
+
+      if(MIN_INDEX <= tabIndex && tabIndex <= MAX_INDEX){
+        this.num = tabIndex;
+        this.$router.push(routerList[tabIndex])
+      }
+
+      
+    },
+    currentTabIndex: function(){
+      var ctx = this;
+      var routerList = this.$router.options.routes;
+      var currentPath = this.$router.currentRoute.fullPath;
+      
+      for(var idx = 0; idx < 3; idx++){
+        if(routerList[idx].path == currentPath){
+          ctx.num = idx;
+        }
+      }
+    }
   },
 };
 </script>
