@@ -2,7 +2,7 @@
   <v-app class = "jejugothic" style = "font-size: 0.85rem">
     <!-- alert -->
     <v-snackbar 
-      :timeout="3000" bottom 
+      :timeout="2000" bottom 
       class="animated fadeIn slow"
       v-model="$store.getters['GET_ALERT'].bar" 
       :color="$store.getters['GET_ALERT'].color">

@@ -70,10 +70,10 @@ export default {
 			ctx.$store.commit('checkConfirm',{"isCheck":true, msg:msg, callBack:function(confirmResult){
 				if(confirmResult){
 					ctx.$store.dispatch('accountStore/'+action, requestParam)
-            .then(res =>{
+            .then(() =>{
               ctx.$emit("closePopup")
               ctx.$store.commit('checkConfirm',{"isCheck":false})
-              ctx.$store.commit("showAlert",{'message':res.message,'color':'success', 'bar':true})
+              //ctx.$store.commit("showAlert",{'message':res.data.message,'color':'success', 'bar':true})
               ctx.$emit("parentInit")
             })
             .catch(error => {

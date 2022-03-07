@@ -32,12 +32,17 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   function(response) {
-    
-    //store.commit('loading',false)
     return response;
   },
   function(error) {
     store.commit('loading',false)
+    if(error.response.status == 401){
+      store.commit("showAlert", {'message' : '로그인 정보가 만료되었습니다','color':'error', 'bar':true})
+
+      setTimeout(() => {
+        store.dispatch("logout")  
+      }, 500);
+    }
     return Promise.reject(error);
   }
 );

@@ -39,7 +39,7 @@
                     <v-btn class ="follow">팔로잉</v-btn>
                 </template>
                 <template v-else>
-                    <v-btn @click="cancelSharing(child.id)" class="accept">대기중</v-btn>
+                    <v-btn @click="cancelSharing(child.sharingId)" class="accept">대기중</v-btn>
                 </template>
                 
                 </v-list-item>
@@ -175,6 +175,7 @@ export default {
       this.isPopup = true
     },
     cancelSharing: function(sharingId){
+      console.log()
         var ctx = this;
         var action = "deleteAccountSharing";
         var msg ="공유를 취소 하시겠습니까?";
