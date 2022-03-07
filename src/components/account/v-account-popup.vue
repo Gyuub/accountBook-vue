@@ -71,7 +71,7 @@ export default {
               ctx.$emit("closePopup")
               ctx.$emit("init")
               ctx.$store.commit('checkConfirm',{"isCheck":false})
-              ctx.$store.commit("showAlert",{'message':res.message,'color':'success', 'bar':true})
+              ctx.$store.commit("showAlert",{'message':res.data.message,'color':'success', 'bar':true})
             })
             .catch(error => {
               var response = error.response.data
