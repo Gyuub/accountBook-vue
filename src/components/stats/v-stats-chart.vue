@@ -61,43 +61,40 @@
       }
     },
     created () {
-      this.selectData()
+      this.getAccountDetailStats()
     },
     methods: {
       saveDate (date) {
         this.$refs.menu.save(date)
 
-        this.selectData();
+        this.getAccountDetailStats()
       },
-      selectData (){
+      getAccountDetailStats: function(){
         var ctx = this;
-        var param = {
-          "search_date" : ctx.date
-        };
-        var url = "/api/v1/chart/selectChartList"
-        this.axios.post(url, param)
-            .then(res =>{
-              if(res.data.result == "Y"){
-                ctx.fillData(res.data.resultList)
-              }else{
-                EventBus.$emit("alert",{'message':res.data.msg,'color':'error'})
-              }
-            })
-            .catch(error => {
-              EventBus.$emit("alert",{'message':error.data.msg,'color':'error'})
-            });
+        var currentAccount = this.$store.getters['accountStore/GET_CURRENT_ACCOUNT'];
+        if(currentAccount.count != 0){
+          var param = "?date="+currentAccount.date.toISOString().substr(0,10)
+          this.$store.dispatch('accountStore/findAllAccountDetailYearStats',param)
+          .then((response) =>{
+            ctx.fillData(response.data)
+          })
+          .catch((error) =>{
+            var response = error.response.data
+            ctx.$store.commit("showAlert",{'message':response.message,'color':'error', 'bar':true})
+          });
+        }
       },
+
       fillData (list) {
         var labels = []
         var expenses_amount = []
         var incom_amount = []
-        var profit_a_loss = []
+        
 
         list.forEach(function(node){
-            labels.push(node.mea_date)
-            expenses_amount.push(node.expenses_amount)
-            incom_amount.push(node.incom_amount)
-            profit_a_loss.push(node.profit_a_loss)
+            labels.push(node.writeDate)
+            expenses_amount.push(node.outcomeAmount)
+            incom_amount.push(node.incomeAmount)
         })
         this.datacollection = {
           labels: labels, 

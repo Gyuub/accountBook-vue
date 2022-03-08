@@ -180,6 +180,29 @@ const accountStore = {
                 }
             });
         },
+        //조회 : 가계부 연도별 통계 조회
+        async findAllAccountDetailYearStats({ state }, param) {
+            var accountId = state.account.id;
+            let url = basePath +"stats/year/" + accountId + param
+            let result = false;
+            let resultErr = null;
+            try {
+                let response = await axios.get(url)
+                result = response.data;
+                console.log(result)
+            }catch(error){
+                resultErr = error;                
+            }
+
+            return new Promise((resolve, reject) => {
+                if (result) {
+                    resolve(result);
+                } else {
+                    reject(resultErr);
+                }
+            });
+        },
+
         
         
         //저장 : 가계부 내역 저장
